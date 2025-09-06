@@ -23,6 +23,7 @@ namespace thread_pool {
     };
 
     class Task : public std::enable_shared_from_this<Task> {
+    public:
         virtual ~Task() = default;
 
         virtual void Run() = 0;
@@ -32,6 +33,9 @@ namespace thread_pool {
 
         void SetTimeTrigger(std::chrono::system_clock::time_point at);
         auto GetTimeTrigger() -> std::optional<std::chrono::system_clock::time_point>;
+
+        bool Capture();
+        void Pend();
 
         void Complete();
 
@@ -70,8 +74,10 @@ namespace thread_pool {
         std::optional<std::function<void(std::shared_ptr<Task>)>> notification_handler_ = std::nullopt;
 
         std::exception_ptr error_;
-
     };
+
+    using TaskPtr = std::shared_ptr<Task>;
+    using TaskWeakPtr = std::weak_ptr<Task>;
 
 } // namespace thread_pool
 

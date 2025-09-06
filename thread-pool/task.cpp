@@ -40,6 +40,24 @@ namespace thread_pool {
         return time_trigger_;
     }
 
+    bool Task::Capture() {
+        std::lock_guard lock{mutex_};
+
+        switch (state_) {
+            case TaskState::PENDING:
+                state_ = TaskState::RUNNING;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    void Task::Pend() {
+        std::lock_guard lock{mutex_};
+
+        state_ = TaskState::PENDING;
+    }
+
     void Task::Complete() {
         std::unique_lock lock{mutex_};
 
